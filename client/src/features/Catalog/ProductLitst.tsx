@@ -17,7 +17,7 @@ export default function ProductList({ products }: Props) {
 
   return (
     <Grid2 container spacing={4}>
-      {renderedProduct};
+      {renderedProduct}
     </Grid2>
   );
 }
