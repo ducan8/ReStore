@@ -10,7 +10,7 @@ import {
   Toolbar,
   Typography,
 } from "@mui/material";
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 
 interface Props {
   onChangeTheme: () => void;
@@ -73,7 +73,14 @@ export default function Header({ onChangeTheme }: Props) {
         </List>
 
         <Box sx={{ display: "flex" }}>
-          <IconButton size="large" edge="start" color="inherit" sx={{ mr: 2 }}>
+          <IconButton
+            component={Link}
+            to="/basket"
+            size="large"
+            edge="start"
+            color="inherit"
+            sx={{ mr: 2 }}
+          >
             <Badge badgeContent="4" color="secondary">
               <ShoppingCart />
             </Badge>
