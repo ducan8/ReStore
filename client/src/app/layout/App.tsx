@@ -20,13 +20,14 @@ function App() {
 
   useEffect(() => {
     const buyerId = getCookie("buyerId");
-    console.log("check buyer-Id exist: ", buyerId);
 
     if (buyerId) {
       agent.Basket.get()
         .then((res) => setBasket(res))
         .catch((error) => console.log(error))
         .finally(() => setLoading(false));
+    } else {
+      setLoading(false);
     }
   }, [setBasket]);
 
