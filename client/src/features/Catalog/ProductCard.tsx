@@ -10,26 +10,33 @@ import {
 } from "@mui/material";
 import Product from "../../app/models/product";
 import { Link } from "react-router-dom";
-import { useState } from "react";
-import agent from "../../app/api/agent";
+// import { useState } from "react";
+// import agent from "../../app/api/agent";
 import { LoadingButton } from "@mui/lab";
-import { useStoreContext } from "../../app/context/StoreContext";
+import { useAppDispatch, useAppSelector } from "../../app/store/configureStore";
+import {
+  addBasketItemAsync,
+  // setBasket
+} from "../basket/basketSlice";
+// import { useStoreContext } from "../../app/context/StoreContext";
 
 interface Props {
   product: Product;
 }
 
 export default function ProductCard({ product }: Props) {
-  const [loading, setLoading] = useState(false);
-  const { setBasket } = useStoreContext();
+  const { status } = useAppSelector((state) => state.basket);
+  const dispatch = useAppDispatch();
+  // const { setBasket } = useStoreContext();
+  // const [loading, setLoading] = useState(false);
 
-  function handleAddItem(productId: number) {
-    setLoading(true);
-    agent.Basket.addItem(productId)
-      .then((basket) => setBasket(basket))
-      .catch((error) => console.log(error))
-      .finally(() => setLoading(false));
-  }
+  // function handleAddItem(productId: number) {
+  //   setLoading(true);
+  //   agent.Basket.addItem(productId)
+  //     .then((basket) => dispatch(setBasket(basket)))
+  //     .catch((error) => console.log(error))
+  //     .finally(() => setLoading(false));
+  // }
 
   return (
     <Card>
@@ -63,9 +70,14 @@ export default function ProductCard({ product }: Props) {
       </CardContent>
       <CardActions>
         <LoadingButton
-          loading={loading}
+          loading={status.includes("pendingAddItem" + product.id)}
           size="small"
-          onClick={() => handleAddItem(product.id)}
+          // onClick={() => handleAddItem(product.id)}
+          onClick={() =>
+            dispatch(
+              addBasketItemAsync({ productId: product!.id, quantity: 1 })
+            )
+          }
         >
           Add To Cart
         </LoadingButton>

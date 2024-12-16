@@ -12,38 +12,43 @@ import {
   Typography,
 } from "@mui/material";
 import { Add, Delete, Remove } from "@mui/icons-material";
-import { useStoreContext } from "../../app/context/StoreContext";
-import { useState } from "react";
-import agent from "../../app/api/agent";
+// import { useStoreContext } from "../../app/context/StoreContext";
+// import { useState } from "react";
+// import agent from "../../app/api/agent";
 import { LoadingButton } from "@mui/lab";
 import BasketSummary from "./BacketSummary";
 import { formatCurrency } from "../../app/util/util";
 import { Link } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../../app/store/configureStore";
+import { addBasketItemAsync, removeBasketItemAsync } from "./basketSlice";
+// import { removeItem, setBasket } from "./basketSlice";
 
 function BasketPage() {
-  const { basket, setBasket, removeItem } = useStoreContext();
-  const [status, setStatus] = useState({
-    loading: false,
-    name: "",
-  });
+  // const { basket, setBasket, removeItem } = useStoreContext();
+  const { basket, status } = useAppSelector((state) => state.basket);
+  const dispatch = useAppDispatch();
+  // const [status, setStatus] = useState({
+  //   loading: false,
+  //   name: "",
+  // });
 
-  function handleAddItem(productId: number, name: string) {
-    setStatus({ loading: true, name });
-    agent.Basket.addItem(productId)
-      .then((basket) => setBasket(basket))
-      .catch((error) => console.log(error))
-      .finally(() => setStatus({ loading: true, name: "" }));
-  }
+  // function handleAddItem(productId: number, name: string) {
+  //   setStatus({ loading: true, name });
+  //   agent.Basket.addItem(productId)
+  //     .then((basket) => dispatch(setBasket(basket)))
+  //     .catch((error) => console.log(error))
+  //     .finally(() => setStatus({ loading: true, name: "" }));
+  // }
 
-  function handleRemoveItem(productId: number, quantity = 1, name = "") {
-    setStatus({ loading: true, name });
-    agent.Basket.removeItem(productId, quantity)
-      .then(() => {
-        removeItem(productId, quantity);
-      })
-      .catch((error) => console.log(error))
-      .finally(() => setStatus({ loading: true, name: "" }));
-  }
+  // function handleRemoveItem(productId: number, quantity = 1, name = "") {
+  //   setStatus({ loading: true, name });
+  //   agent.Basket.removeItem(productId, quantity)
+  //     .then(() => {
+  //       dispatch(removeItem({ productId, quantity }));
+  //     })
+  //     .catch((error) => console.log(error))
+  //     .finally(() => setStatus({ loading: true, name: "" }));
+  // }
 
   if (!basket)
     return <Typography variant="h3">Your basket is empty</Typography>;
@@ -83,13 +88,23 @@ function BasketPage() {
                 <TableCell align="center">
                   <LoadingButton
                     loading={
-                      status.loading && status.name == "rem" + item.productId
+                      // status.loading && status.name == "rem" + item.productId
+                      status.includes(
+                        "pendingRemoveItem" + item?.productId + "rem"
+                      )
                     }
                     onClick={() =>
-                      handleRemoveItem(
-                        item.productId,
-                        1,
-                        "rem" + item.productId
+                      // handleRemoveItem(
+                      //   item.productId,
+                      //   1,
+                      //   "rem" + item.productId
+                      // )
+                      dispatch(
+                        removeBasketItemAsync({
+                          productId: item.productId,
+                          quantity: item.quantity,
+                          name: "rem",
+                        })
                       )
                     }
                     color="error"
@@ -99,10 +114,17 @@ function BasketPage() {
                   {item.quantity}
                   <LoadingButton
                     loading={
-                      status.loading && status.name == "add" + item.productId
+                      // status.loading && status.name == "add" + item.productId
+                      status === "pendingAddItem" + item.productId
                     }
                     onClick={() =>
-                      handleAddItem(item.productId, "add" + item.productId)
+                      // handleAddItem(item.productId, "add" + item.productId)
+                      dispatch(
+                        addBasketItemAsync({
+                          productId: item.productId,
+                          quantity: 1,
+                        })
+                      )
                     }
                     color="secondary"
                   >
@@ -115,13 +137,23 @@ function BasketPage() {
                 <TableCell align="right">
                   <LoadingButton
                     loading={
-                      status.loading && status.name == "del" + item.productId
+                      // status.loading && status.name == "del" + item.productId
+                      status.includes(
+                        "pendingRemoveItem" + item.productId + "del"
+                      )
                     }
                     onClick={() =>
-                      handleRemoveItem(
-                        item.productId,
-                        item.quantity,
-                        "del" + item.productId
+                      // handleRemoveItem(
+                      //   item.productId,
+                      //   item.quantity,
+                      //   "del" + item.productId
+                      // )
+                      dispatch(
+                        removeBasketItemAsync({
+                          productId: item.productId,
+                          quantity: item.quantity,
+                          name: "del",
+                        })
                       )
                     }
                     color="error"
@@ -134,7 +166,7 @@ function BasketPage() {
           </TableBody>
         </Table>
       </TableContainer>
-      <Grid2 container sx={{ mt: 4 }}>
+      <Grid2 container sx={{ my: 4 }}>
         <Grid2 size={{ xs: 6 }} />
         <Grid2 size={{ xs: 6 }}>
           <BasketSummary />
