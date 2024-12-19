@@ -13,6 +13,7 @@ import {
 import { Link, NavLink } from "react-router-dom";
 // import { useStoreContext } from "../context/StoreContext";
 import { useAppSelector } from "../store/configureStore";
+import SignedMenu from "./SignedMenu";
 
 interface Props {
   onChangeTheme: () => void;
@@ -27,7 +28,6 @@ const midLinks = [
 const rightLinks = [
   { title: "Login", path: "login" },
   { title: "Register", path: "register" },
-  { title: "Logout", path: "logout" },
 ];
 
 const navStyles = {
@@ -45,6 +45,7 @@ const navStyles = {
 export default function Header({ onChangeTheme }: Props) {
   // const { basket } = useStoreContext();
   const { basket } = useAppSelector((state) => state.basket);
+  const { user } = useAppSelector((state) => state.account);
   const itemCount = basket?.items.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
@@ -91,21 +92,24 @@ export default function Header({ onChangeTheme }: Props) {
               <ShoppingCart />
             </Badge>
           </IconButton>
-
-          <List sx={{ display: "flex" }}>
-            {rightLinks.map((link) => {
-              return (
-                <ListItem
-                  component={NavLink}
-                  to={link.path}
-                  key={link.path}
-                  sx={navStyles}
-                >
-                  {link.title.toUpperCase()}
-                </ListItem>
-              );
-            })}
-          </List>
+          {user ? (
+            <SignedMenu />
+          ) : (
+            <List sx={{ display: "flex" }}>
+              {rightLinks.map((link) => {
+                return (
+                  <ListItem
+                    component={NavLink}
+                    to={link.path}
+                    key={link.path}
+                    sx={navStyles}
+                  >
+                    {link.title.toUpperCase()}
+                  </ListItem>
+                );
+              })}
+            </List>
+          )}
         </Box>
       </Toolbar>
     </AppBar>

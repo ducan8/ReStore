@@ -1,4 +1,3 @@
-import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./app/layout/style.css";
 import "@fontsource/roboto/300.css";
@@ -11,15 +10,18 @@ import { StoreProvider } from "./app/context/StoreContext.tsx";
 import { Provider } from "react-redux";
 import { store } from "./app/store/configureStore.ts";
 import { fetchProductsAsync } from "./features/catalog/catalogSlice.ts";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 store.dispatch(fetchProductsAsync());
 
 createRoot(document.getElementById("root")!).render(
-  <StrictMode>
+  <>
+    <ToastContainer position="bottom-right" theme="colored" hideProgressBar />
     <StoreProvider>
       <Provider store={store}>
         <RouterProvider router={router} />
       </Provider>
     </StoreProvider>
-  </StrictMode>
+  </>
 );
